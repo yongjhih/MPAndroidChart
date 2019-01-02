@@ -9,6 +9,7 @@ import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.github.mikephil.charting.utils.MPPointD;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -129,7 +130,7 @@ public class ChartHighlighter<T extends BarLineScatterCandleBubbleDataProvider> 
 
         mHighlightBuffer.clear();
 
-        BarLineScatterCandleBubbleData data = getData();
+        final BarLineScatterCandleBubbleData data = getData();
 
         if (data == null)
             return mHighlightBuffer;
@@ -159,25 +160,24 @@ public class ChartHighlighter<T extends BarLineScatterCandleBubbleDataProvider> 
      */
     protected List<Highlight> buildHighlights(IDataSet set, int dataSetIndex, float xVal, DataSet.Rounding rounding) {
 
-        ArrayList<Highlight> highlights = new ArrayList<>();
-
         //noinspection unchecked
         List<Entry> entries = set.getEntriesForXValue(xVal);
-        if (entries.size() == 0) {
+        if (entries.isEmpty()) {
             // Try to find closest x-value and take all entries for that x-value
             final Entry closest = set.getEntryForXValue(xVal, Float.NaN, rounding);
-            if (closest != null)
-            {
+            if (closest != null) {
                 //noinspection unchecked
                 entries = set.getEntriesForXValue(closest.getX());
             }
         }
 
-        if (entries.size() == 0)
-            return highlights;
+        if (entries.isEmpty())
+            return Collections.emptyList();
 
-        for (Entry e : entries) {
-            MPPointD pixels = mChart.getTransformer(
+        final ArrayList<Highlight> highlights = new ArrayList<>();
+
+        for (final Entry e : entries) {
+            final MPPointD pixels = mChart.getTransformer(
                     set.getAxisDependency()).getPixelForValues(e.getX(), e.getY());
 
             highlights.add(new Highlight(
